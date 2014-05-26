@@ -1,16 +1,16 @@
 var express=require('express');
 var app = express();
-var fs = require('fs');
 var request = require('request');
 var cheerio = require('cheerio');
 
 app.get('/scrape', function (req, res) {
-	url='http://www.imdb.com/title/tt1723121/';
+	url='http://www.imdb.com/title/tt0302886/';
 	request(url, function (error, response, html) {
 		//First we make sure there are no errors when making the request
 		if(!error) {
 			//we use the cheerio library on the returned html, which essentially gives us jQuery functionality
 			var $ = cheerio.load(html);
+			var parsedResults = [];
 			//Finally we define the variables we're going to capture
 			var title, release, rating;
 			var json = {title: "", release: "", rating: ""};
@@ -21,22 +21,25 @@ app.get('/scrape', function (req, res) {
 				//When examining the DOM we notice that the title rests within the first child element of the header tag.
 				//Using jQuery we can navigate and get the text by writing the following code
 				title = data.children().first().text();
-				json.title=title;
-				
 				release=data.children().last().children().text();
-				json.release=release;
-						});
+				
+				});
 			$('.star-box.giga-star').filter(function () {
 				var data = $(this);
 				rating = data.children().first().text();
-				json.rating=rating;
+				
 			});
+			var MovieInfo = {
+					title: title,
+					release: release,
+					rating: rating
+				};
+			parsedResults.push(MovieInfo);
+			console.log(parsedResults);
 
 		}
-		fs.writeFile('output.json', JSON.stringify(json, null, 4), function (err) {
-			console.log('File successfully written! Check project directory');
-		})
-		res.send(JSON.stringify(json, null, 4));
+		res.set('Content-type', 'text/html');
+		res.send(parsedResults);
 	})
 
 })
