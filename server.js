@@ -4,7 +4,7 @@ var request = require('request');
 var cheerio = require('cheerio');
 
 app.get('/scrape', function (req, res) {
-	url='http://www.imdb.com/title/tt0302886/';
+	url='http://www.imdb.com/title/tt0111161/';
 	request(url, function (error, response, html) {
 		//First we make sure there are no errors when making the request
 		if(!error) {
@@ -12,8 +12,6 @@ app.get('/scrape', function (req, res) {
 			var $ = cheerio.load(html);
 			var parsedResults = [];
 			//Finally we define the variables we're going to capture
-			var title, release, rating;
-			var json = {title: "", release: "", rating: ""};
 			//We use the unique header class as a starting point
 			$('.header').filter(function () {
 				// Let's store the data we filter into a variable  so we can see what's going on
